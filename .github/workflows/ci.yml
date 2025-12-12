@@ -138,18 +138,10 @@ jobs:
       - uses: github/codeql-action/upload-sarif@v3
         with:
           sarif_file: trivy-image.sarif
-
-  sbom:
-    name: SBOM (CycloneDX)
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install Trivy
-        run: |
-          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /usr/local/bin
-      - name: Generate SBOM (FS)
-        run: trivy sbom --format cyclonedx --output sbom.cdx.json .
-      - uses: actions/upload-artifact@v4
+      - name: Generate SBOM (CycloneDX)
+        uses: aquasecurity/trivy-action@0.20.0
         with:
-          name: sbom-cyclonedx
-          path: sbom.cdx.json
+          scan-type: 'image'
+          image-ref: 'app:ci'
+          format: 'cyclonedx' # Стандартный формат для SBOM
+          output: 'sbom.cdx.json'
